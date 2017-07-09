@@ -2,7 +2,6 @@
 using Services;
 using Services.Interfaces;
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -52,9 +51,7 @@ namespace TimeRegistrationSystem.Controllers
         {
             try
             {
-                var registration = _registrationService
-                    .GetRegistrations(new QueryArguments { Id = id })
-                    .SingleOrDefault();
+                var registration = _registrationService.GetRegistration(id);
 
                 if (registration == null)
                 {

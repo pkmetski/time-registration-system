@@ -76,18 +76,18 @@ namespace TimeRegistrationSystem.UnitTest
         {
             //Arrange
             var id = 42;
-            var registrations = new List<Registration> { new Registration() };
+            var registration = new Registration();
             _registrationServiceMock
-                .Setup(rsm => rsm.GetRegistrations(It.IsAny<QueryArguments>()))
-                .Returns(registrations);
+                .Setup(rsm => rsm.GetRegistration(id))
+                .Returns(registration);
 
             //Act
             var result = _registrationsController.GetById(id);
 
             //Assert
-            _registrationServiceMock.Verify(rsm => rsm.GetRegistrations(It.Is<QueryArguments>(qa => qa.Id == id)), Times.Once);
+            _registrationServiceMock.Verify(rsm => rsm.GetRegistration(id), Times.Once);
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(result.Content.ReadAsAsync<Registration>().Result, Is.EqualTo(registrations.Single()));
+            Assert.That(result.Content.ReadAsAsync<Registration>().Result, Is.EqualTo(registration));
         }
 
         [Test]
@@ -95,16 +95,15 @@ namespace TimeRegistrationSystem.UnitTest
         {
             //Arrange
             var id = 42;
-            var registrations = new List<Registration>();
             _registrationServiceMock
-                .Setup(rsm => rsm.GetRegistrations(It.IsAny<QueryArguments>()))
-                .Returns(registrations);
+                .Setup(rsm => rsm.GetRegistration(id))
+                .Returns<Registration>(null);
 
             //Act
             var result = _registrationsController.GetById(id);
 
             //Assert
-            _registrationServiceMock.Verify(rsm => rsm.GetRegistrations(It.Is<QueryArguments>(qa => qa.Id == id)), Times.Once);
+            _registrationServiceMock.Verify(rsm => rsm.GetRegistration(id), Times.Once);
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 

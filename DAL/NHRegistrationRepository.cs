@@ -52,10 +52,6 @@ namespace DAL
 
         private IQueryOver<Registration, Registration> BuildQuery(IQueryOver<Registration, Registration> query, QueryArguments args)
         {
-            if (args.Id.HasValue)
-            {
-                query = query.Where(r => r.Id == args.Id);
-            }
             if (args.FromDate.HasValue)
             {
                 query = query.Where(r => r.Date >= args.FromDate);
