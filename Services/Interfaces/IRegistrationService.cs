@@ -7,6 +7,8 @@ namespace Services.Interfaces
     {
         int RegisterTime(Registration registration);
 
+        Registration GetRegistration(int id);
+
         IEnumerable<Registration> GetRegistrations(QueryArguments args);
     }
 }

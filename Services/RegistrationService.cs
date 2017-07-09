@@ -4,6 +4,7 @@ using Model;
 using DAL.Interfaces;
 using NHibernate;
 using System;
+using System.Linq;
 
 namespace Services
 {
@@ -14,6 +15,12 @@ namespace Services
         public RegistrationService(IRegistrationRepository registrationRepository)
         {
             _registrationRepository = registrationRepository;
+        }
+
+        public Registration GetRegistration(int id)
+        {
+            return _registrationRepository.Get(id);
+
         }
 
         public IEnumerable<Registration> GetRegistrations(QueryArguments args)

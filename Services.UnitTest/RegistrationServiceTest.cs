@@ -79,5 +79,22 @@ namespace Services.UnitTest
             //Assert
             Assert.That(result, Is.EqualTo(registrationsList));
         }
+
+        [Test]
+        public void WhenRegistrationIsRetrievedByIdThenRegistrationRepositoryIsQueried()
+        {
+            //Arrange
+            var id = 9;
+            var registration = new Registration();
+            _registrationRepositoryMock
+                .Setup(rrm => rrm.Get(id))
+                .Returns(registration);
+
+            //Act
+            var result = _registrationService.GetRegistration(id);
+
+            //Assert
+            Assert.That(result, Is.EqualTo(registration));
+        }
     }
 }
