@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL.UnitTest", "DAL.UnitTes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{7A144A12-6B89-4356-9587-065A277E225E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeRegistrationSystem.UnitTest", "TimeRegistrationSystem.UnitTest\TimeRegistrationSystem.UnitTest.csproj", "{BA47E3E4-3F5B-4932-B57C-30D716F989B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{D7E0D3E5-D1C0-4E67-AC27-85A1819A3D3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7E0D3E5-D1C0-4E67-AC27-85A1819A3D3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7E0D3E5-D1C0-4E67-AC27-85A1819A3D3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA47E3E4-3F5B-4932-B57C-30D716F989B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA47E3E4-3F5B-4932-B57C-30D716F989B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA47E3E4-3F5B-4932-B57C-30D716F989B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA47E3E4-3F5B-4932-B57C-30D716F989B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,5 +60,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{867CD494-B472-4B0E-8B36-4D7FDAFC6A87} = {7A144A12-6B89-4356-9587-065A277E225E}
 		{D7E0D3E5-D1C0-4E67-AC27-85A1819A3D3E} = {7A144A12-6B89-4356-9587-065A277E225E}
+		{BA47E3E4-3F5B-4932-B57C-30D716F989B2} = {7A144A12-6B89-4356-9587-065A277E225E}
 	EndGlobalSection
 EndGlobal

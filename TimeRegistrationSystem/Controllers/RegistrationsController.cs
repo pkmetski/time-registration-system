@@ -18,6 +18,11 @@ namespace TimeRegistrationSystem.Controllers
             _registrationService = ServicesFactory.GetRegistrationService();
         }
 
+        public RegistrationsController(IRegistrationService registrationService)
+        {
+            _registrationService = registrationService;
+        }
+
         [Route("api/registrations")]
         [HttpGet]
         public HttpResponseMessage GetByArgs(DateTime? fromDate = null, DateTime? toDate = null, string project = null, string customer = null)

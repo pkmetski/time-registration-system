@@ -6,7 +6,6 @@ using NHibernate;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Reflection;
 using System.Linq;
@@ -37,7 +36,6 @@ namespace DAL.UnitTest
             var config = Fluently.Configure()
                     .Database(SQLiteConfiguration.Standard.ConnectionString(connectionString))
                     .Mappings(m => m.HbmMappings.AddFromAssembly(Assembly.Load("Model")))
-                    //.ExposeConfiguration(cfg => cfg.SetProperty("current_session_context_class", "call"))
                     .BuildConfiguration();
 
             var schemaExport = new SchemaExport(config);
@@ -46,6 +44,16 @@ namespace DAL.UnitTest
             schemaExport.Execute(false, true, false, _connection, null);
 
             return config.BuildSessionFactory();
+        }
+
+        [Test]
+        public void WhenNonNullableFieldsAreNullThenException()
+        {
+            //Arrange
+            var registration = new Registration { Hours = null };
+
+            //Act, Assert
+            Assert.Throws<PropertyValueException>(() => _registrationRepository.Insert(registration));
         }
 
         [Test]
@@ -71,54 +79,139 @@ namespace DAL.UnitTest
             Assert.That(persistedReg.Customer, Is.EqualTo(inputReg.Customer));
         }
 
-        private static IEnumerable<TestCaseData> RegistrationQueryArgumentsTestCases
+        [Test]
+        public void WhenDatabaseIsQueriedWithNonExistentCustomerThenNoResults()
         {
-            get
-            {
-                Func<Registration, bool> nonExistentCustomerCondition = reg => !string.Equals(reg.Customer, "Customer3");
-                yield return new TestCaseData(new QueryArguments { Customer = "Customer3" }, nonExistentCustomerCondition, 0);
+            //Arrange
+            InsertRegistrations();
+            var args = new QueryArguments { Customer = "Customer3" };
 
-                Func<Registration, bool> customerCondition = reg => string.Equals(reg.Customer, "Customer2");
-                yield return new TestCaseData(new QueryArguments { Customer = "Customer2" }, customerCondition, 3);
+            //Act
+            var result = _registrationRepository.Get(args);
 
-                Func<Registration, bool> hoursCondition = reg => reg.Hours == 8;
-                yield return new TestCaseData(new QueryArguments { Hours = 8 }, hoursCondition, 1);
-
-                Func<Registration, bool> projectCondition = reg => string.Equals(reg.Project, "Future project");
-                yield return new TestCaseData(new QueryArguments { Project = "Future project" }, projectCondition, 1);
-
-                Func<Registration, bool> dateFomCondition = reg => reg.Date >= new DateTime(2007, 2, 1);
-                yield return new TestCaseData(new QueryArguments { FromDate = new DateTime(2007, 2, 1) }, dateFomCondition, 3);
-
-                Func<Registration, bool> dateToCondition = reg => reg.Date <= new DateTime(2020, 1, 1);
-                yield return new TestCaseData(new QueryArguments { ToDate = new DateTime(2020, 1, 1) }, dateToCondition, 3);
-
-                Func<Registration, bool> dateFromToCondition = reg => reg.Date >= new DateTime(2007, 1, 1) && reg.Date <= new DateTime(2007, 12, 31);
-                yield return new TestCaseData(new QueryArguments { FromDate = new DateTime(2007, 1, 1), ToDate = new DateTime(2007, 12, 31) }, dateFromToCondition, 2);
-
-                Func<Registration, bool> allPropsCondition = reg =>
-                    reg.Date >= new DateTime(2007, 1, 1) &&
-                    reg.Date <= new DateTime(2007, 12, 31) &&
-                    string.Equals(reg.Project, "Past project") &&
-                    string.Equals(reg.Customer, "Customer2") &&
-                    reg.Hours == 6;
-                yield return new TestCaseData(new QueryArguments
-                {
-                    FromDate = new DateTime(2007, 1, 1),
-                    ToDate = new DateTime(2007, 12, 31),
-                    Project = "Past project",
-                    Customer = "Customer2",
-                    Hours = 6
-                },
-                allPropsCondition, 1);
-            }
+            //Assert
+            Assert.That(result.ToList().Count, Is.EqualTo(0));
+            Assert.True(result.All(reg => !string.Equals(reg.Customer, args.Customer)));
         }
 
         [Test]
-        [TestCaseSource(nameof(RegistrationQueryArgumentsTestCases))]
-        public void WhenDatabaseIsQueriedWithQueryArgumentsThenCorrectResultsAreRetrieved(QueryArguments args, Func<Registration, bool> condition, int expectedCount)
+        public void WhenDatabaseIsQueriedWithExistingCustomerThenCorrectResults()
         {
             //Arrange
+            InsertRegistrations();
+            var args = new QueryArguments { Customer = "Customer2" };
+
+            //Act
+            var result = _registrationRepository.Get(args);
+
+            //Assert
+            Assert.That(result.ToList().Count, Is.EqualTo(3));
+            Assert.True(result.All(reg => string.Equals(reg.Customer, args.Customer)));
+        }
+
+        [Test]
+        public void WhenDatabaseIsQueriedWithExistingHoursThenCorrectResults()
+        {
+            //Arrange
+            InsertRegistrations();
+            var args = new QueryArguments { Hours = 8 };
+
+            //Act
+            var result = _registrationRepository.Get(args);
+
+            //Assert
+            Assert.That(result.ToList().Count, Is.EqualTo(1));
+            Assert.True(result.All(reg => reg.Hours == args.Hours));
+        }
+
+        [Test]
+        public void WhenDatabaseIsQueriedWithProjectThenCorrectResults()
+        {
+            //Arrange
+            InsertRegistrations();
+            var args = new QueryArguments { Project = "Future project" };
+
+            //Act
+            var result = _registrationRepository.Get(args);
+
+            //Assert
+            Assert.That(result.ToList().Count, Is.EqualTo(1));
+            Assert.True(result.All(reg => string.Equals(reg.Project, args.Project)));
+        }
+
+        [Test]
+        public void WhenDatabaseIsQueriedWithFromDateThenCorrectResults()
+        {
+            //Arrange
+            InsertRegistrations();
+            var args = new QueryArguments { FromDate = new DateTime(2007, 2, 1) };
+
+            //Act
+            var result = _registrationRepository.Get(args);
+
+            //Assert
+            Assert.That(result.ToList().Count, Is.EqualTo(3));
+            Assert.True(result.All(reg => reg.Date >= args.FromDate));
+        }
+
+        [Test]
+        public void WhenDatabaseIsQueriedWithToDateThenCorrectResults()
+        {
+            //Arrange
+            InsertRegistrations();
+            var args = new QueryArguments { ToDate = new DateTime(2020, 1, 1) };
+
+            //Act
+            var result = _registrationRepository.Get(args);
+
+            //Assert
+            Assert.That(result.ToList().Count, Is.EqualTo(3));
+            Assert.True(result.All(reg => reg.Date <= args.ToDate));
+        }
+
+        [Test]
+        public void WhenDatabaseIsQueriedWithDateRangeThenCorrectResults()
+        {
+            //Arrange
+            InsertRegistrations();
+            var args = new QueryArguments { FromDate = new DateTime(2007, 1, 1), ToDate = new DateTime(2007, 12, 31) };
+
+            //Act
+            var result = _registrationRepository.Get(args);
+
+            //Assert
+            Assert.That(result.ToList().Count, Is.EqualTo(2));
+            Assert.True(result.All(reg => reg.Date >= args.FromDate && reg.Date <= args.ToDate));
+        }
+
+        [Test]
+        public void WhenDatabaseIsQueriedWithMultipleArgsValuesThenCorrectResults()
+        {
+            //Arrange
+            InsertRegistrations();
+            var args = new QueryArguments
+            {
+                FromDate = new DateTime(2007, 1, 1),
+                ToDate = new DateTime(2007, 12, 31),
+                Project = "Past project",
+                Customer = "Customer2",
+                Hours = 6
+            };
+
+            //Act
+            var result = _registrationRepository.Get(args);
+
+            //Assert
+            Assert.That(result.ToList().Count, Is.EqualTo(1));
+            Assert.True(result.All(reg => reg.Date >= args.FromDate &&
+                    reg.Date <= args.ToDate &&
+                    string.Equals(reg.Project, args.Project) &&
+                    string.Equals(reg.Customer, args.Customer) &&
+                    reg.Hours == args.Hours));
+        }
+
+        private void InsertRegistrations()
+        {
             _registrationRepository.Insert(new Registration
             {
                 Date = new DateTime(2017, 1, 31),
@@ -147,13 +240,6 @@ namespace DAL.UnitTest
                 Project = "Future project",
                 Customer = "Customer2"
             });
-
-            //Act
-            var result = _registrationRepository.Get(args);
-
-            //Assert
-            Assert.That(result.ToList().Count, Is.EqualTo(expectedCount));
-            Assert.True(result.All(condition));
         }
     }
 }
