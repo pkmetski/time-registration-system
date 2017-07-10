@@ -1,11 +1,9 @@
 ﻿using System;
 
-namespace Model
+namespace Model.Arguments
 {
-    public class QueryArguments
+    public class BaseArguments
     {
-        public int? Id { get; set; }
-
         public DateTime? FromDate { get; set; }
 
         public DateTime? ToDate { get; set; }
@@ -13,7 +11,5 @@ namespace Model
         public string Project { get; set; }
 
         public string Customer { get; set; }
-
-        public int? Hours { get; set; }
     }
 }

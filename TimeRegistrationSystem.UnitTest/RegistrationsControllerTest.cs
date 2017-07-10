@@ -1,10 +1,10 @@
 ﻿using Model;
+using Model.Arguments;
 using Moq;
 using NUnit.Framework;
 using Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -17,12 +17,12 @@ namespace TimeRegistrationSystem.UnitTest
     public class RegistrationsControllerTest
     {
         private RegistrationsController _registrationsController;
-        private Mock<IRegistrationService> _registrationServiceMock;
+        private Mock<IEntityService<Registration>> _registrationServiceMock;
 
         [SetUp]
         public void Setup()
         {
-            _registrationServiceMock = new Mock<IRegistrationService>();
+            _registrationServiceMock = new Mock<IEntityService<Registration>>();
             _registrationsController = new RegistrationsController(_registrationServiceMock.Object);
             _registrationsController.Request = new HttpRequestMessage()
             {
@@ -40,14 +40,14 @@ namespace TimeRegistrationSystem.UnitTest
             var customer = "cust";
             var registrations = new List<Registration>();
             _registrationServiceMock
-                .Setup(rsm => rsm.GetRegistrations(It.IsAny<QueryArguments>()))
+                .Setup(rsm => rsm.Get(It.IsAny<QueryArguments>()))
                 .Returns(registrations);
 
             //Act
             var result = _registrationsController.GetByArgs(fromDate, toDate, project, customer);
 
             //Assert
-            _registrationServiceMock.Verify(rsm => rsm.GetRegistrations(
+            _registrationServiceMock.Verify(rsm => rsm.Get(
                 It.Is<QueryArguments>(qa => qa.FromDate == fromDate &&
                 qa.ToDate == toDate &&
                 qa.Project == project &&
@@ -61,7 +61,7 @@ namespace TimeRegistrationSystem.UnitTest
         {
             //Arrange
             _registrationServiceMock
-                .Setup(rsm => rsm.GetRegistrations(It.IsAny<QueryArguments>()))
+                .Setup(rsm => rsm.Get(It.IsAny<QueryArguments>()))
                 .Throws(new Exception());
 
             //Act
@@ -78,14 +78,14 @@ namespace TimeRegistrationSystem.UnitTest
             var id = 42;
             var registration = new Registration();
             _registrationServiceMock
-                .Setup(rsm => rsm.GetRegistration(id))
+                .Setup(rsm => rsm.Get(id))
                 .Returns(registration);
 
             //Act
             var result = _registrationsController.GetById(id);
 
             //Assert
-            _registrationServiceMock.Verify(rsm => rsm.GetRegistration(id), Times.Once);
+            _registrationServiceMock.Verify(rsm => rsm.Get(id), Times.Once);
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(result.Content.ReadAsAsync<Registration>().Result, Is.EqualTo(registration));
         }
@@ -96,14 +96,14 @@ namespace TimeRegistrationSystem.UnitTest
             //Arrange
             var id = 42;
             _registrationServiceMock
-                .Setup(rsm => rsm.GetRegistration(id))
+                .Setup(rsm => rsm.Get(id))
                 .Returns<Registration>(null);
 
             //Act
             var result = _registrationsController.GetById(id);
 
             //Assert
-            _registrationServiceMock.Verify(rsm => rsm.GetRegistration(id), Times.Once);
+            _registrationServiceMock.Verify(rsm => rsm.Get(id), Times.Once);
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
@@ -114,7 +114,7 @@ namespace TimeRegistrationSystem.UnitTest
             var registration = new Registration();
             var id = 42;
             _registrationServiceMock
-                .Setup(rsm => rsm.RegisterTime(registration))
+                .Setup(rsm => rsm.Insert(registration))
                 .Returns(id);
 
             //Act
@@ -132,7 +132,7 @@ namespace TimeRegistrationSystem.UnitTest
             //Arrange
             var registration = new Registration();
             _registrationServiceMock
-                .Setup(rsm => rsm.RegisterTime(registration))
+                .Setup(rsm => rsm.Insert(registration))
                 .Throws((Exception)Activator.CreateInstance(exceptionType));
 
             //Act

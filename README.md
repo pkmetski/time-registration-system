@@ -9,6 +9,10 @@ project time registrations data.
 
 -   retrieve time registration(s)
 
+-   create new invoice
+
+-   retrieve invoice by id
+
  
 
 **Technologies**
@@ -31,6 +35,18 @@ An SQL server installation with database named *TimeRegistrationSystem*.
 
 **Usage**
 
+ 
+
+*Registrations*
+
+ 
+
+Endpoint:
+
+http://localhost:65046/api/registrations/
+
+ 
+
 -   Create new registration (POST)
 
 The request body is a JSON representation of a Registration instance:
@@ -47,7 +63,7 @@ The request body is a JSON representation of a Registration instance:
 
 }
 
-In order to create a new registration ,a POST request is made against the
+In order to create a new registration, a POST request is made against the
 following endpoint:
 
 http://localhost:65046/api/registrations
@@ -80,3 +96,71 @@ This query will match all registration records with date between 31st January
 All the fields need to match in order for a record to be returned. It is
 possible to omit any (or all) parameters. Issuing the query with no parameters
 will apply no filtering to the data set and all records will be returned.
+
+ 
+
+*Invoices*
+
+ 
+
+Endpoint:
+
+http://localhost:65046/api/invoices/
+
+ 
+
+-   Create a new invoice (POST)
+
+The POST request expects the following JSON string in its body:
+
+{
+
+"FromDate": "2024-12-31",
+
+"ToDate": "2034-12-31",
+
+"Project": "project1",
+
+"Customer": "customer3"
+
+}
+
+This is to be read as follows: create an invoice for all registrations between
+the dates provided, for the project and customer provided. If none of the
+registrations in the system meet the requirements set by the query, the server
+returns 400, Bad request. None of these properties is required. Providing an
+empty JSON object will result in all non-invoiced registrations, regardless of
+their customer and project, being assigned to the same invoice.
+
+The return value is the ID of the newly created invoice.
+
+ 
+
+-   Retrieve an invoice by ID (GET)
+
+A single invoice record can be retrieved by its ID by Issuing a GET request
+against http://localhost:65046/api/invoices/1
+
+This will return invoice with ID 1
+
+For example an invoice with two registrations can look as follows:
+
+{
+
+"Id": 1,
+
+"Amount": 42,
+
+"RegistrationsIds": [
+
+2,
+
+3
+
+]
+
+}
+
+ 
+
+**NOTE**: Currently all invoices get the same hard-coded price of 42.

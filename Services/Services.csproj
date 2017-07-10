@@ -48,11 +48,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\IPricingService.cs" />
-    <Compile Include="Interfaces\IRegistrationService.cs" />
+    <Compile Include="EntityService.cs" />
+    <Compile Include="Interfaces\ISessionHelper.cs" />
+    <Compile Include="SessionHelper.cs" />
+    <Compile Include="Interfaces\IEntityService.cs" />
+    <Compile Include="Interfaces\IInvoicingService.cs" />
+    <Compile Include="InvoicingService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegistrationService.cs" />
-    <Compile Include="ServicesFactory.cs" />
+    <Compile Include="Factories\ServicesFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAL\DAL.csproj">

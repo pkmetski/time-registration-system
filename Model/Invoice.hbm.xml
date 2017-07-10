@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Model" assembly="Model">
+  <class name="Invoice" table="Invoice">
+    <!-- Primary Key(s) -->
+    <id name="Id" generator="identity"/>
+
+    <property name="Amount" />
+
+    <set name="Registrations" inverse="true" cascade="save-update">
+      <key column="InvoiceId" />
+      <one-to-many class="Registration"/>
+    </set>
+  </class>
+</hibernate-mapping>

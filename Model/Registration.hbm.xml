@@ -1,14 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Model" assembly="Model">
-  <class name="Registration" table="Registration" >
+  <class name="Registration" table="Registration">
     <!-- Primary Key(s) -->
-    <id name="Id" column="Id">
-      <generator class="identity" />
-    </id>
+    <id name="Id" generator="identity" />
 
     <property name="Date" column="Date" not-null="true"/>
     <property name="Hours" column="Hours" not-null="true"/>
     <property name="Project" column="Project" not-null="true"/>
     <property name="Customer" column="Customer" not-null="true"/>
+    <many-to-one name="Invoice" column="InvoiceId"/>
   </class>
 </hibernate-mapping>

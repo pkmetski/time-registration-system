@@ -1,5 +1,7 @@
 ﻿using Model;
+using Model.Arguments;
 using Services;
+using Services.Factories;
 using Services.Interfaces;
 using System;
 using System.Net;
@@ -10,14 +12,16 @@ namespace TimeRegistrationSystem.Controllers
 {
     public class RegistrationsController : ApiController
     {
-        private readonly IRegistrationService _registrationService;
+        private readonly IEntityService<Registration> _registrationService;
+        private readonly ISessionHelper _sessionHelper;
 
         public RegistrationsController()
         {
-            _registrationService = ServicesFactory.GetRegistrationService();
+            _sessionHelper = new SessionHelper();
+            _registrationService = new ServicesFactory(_sessionHelper).GetRegistrationService();
         }
 
-        public RegistrationsController(IRegistrationService registrationService)
+        public RegistrationsController(IEntityService<Registration> registrationService)
         {
             _registrationService = registrationService;
         }
@@ -36,7 +40,7 @@ namespace TimeRegistrationSystem.Controllers
                     Customer = customer
                 };
 
-                var regs = _registrationService.GetRegistrations(args);
+                var regs = _registrationService.Get(args);
                 return Request.CreateResponse(HttpStatusCode.OK, regs);
             }
             catch (Exception ex)
@@ -51,7 +55,7 @@ namespace TimeRegistrationSystem.Controllers
         {
             try
             {
-                var registration = _registrationService.GetRegistration(id);
+                var registration = _registrationService.Get(id);
 
                 if (registration == null)
                 {
@@ -71,7 +75,7 @@ namespace TimeRegistrationSystem.Controllers
         {
             try
             {
-                var id = _registrationService.RegisterTime(registration);
+                var id = _registrationService.Insert(registration);
                 return Request.CreateResponse(HttpStatusCode.Created, id);
             }
             catch (ArgumentException ex)
@@ -82,6 +86,15 @@ namespace TimeRegistrationSystem.Controllers
             {
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _sessionHelper.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

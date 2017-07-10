@@ -1,5 +1,6 @@
 ﻿using DAL.Interfaces;
 using Model;
+using Model.Arguments;
 using Moq;
 using NHibernate;
 using NUnit.Framework;
@@ -12,13 +13,13 @@ namespace Services.UnitTest
     [TestFixture]
     public class RegistrationServiceTest
     {
-        private Mock<IRegistrationRepository> _registrationRepositoryMock;
-        private IRegistrationService _registrationService;
+        private Mock<IRepository<Registration>> _registrationRepositoryMock;
+        private IEntityService<Registration> _registrationService;
 
         [SetUp]
         public void Setup()
         {
-            _registrationRepositoryMock = new Mock<IRegistrationRepository>();
+            _registrationRepositoryMock = new Mock<IRepository<Registration>>();
             _registrationService = new RegistrationService(_registrationRepositoryMock.Object);
         }
 
@@ -44,7 +45,7 @@ namespace Services.UnitTest
                 .Returns(resultingId);
 
             //Act
-            var result = _registrationService.RegisterTime(registration);
+            var result = _registrationService.Insert(registration);
 
             //Assert
             Assert.That(result, Is.EqualTo(resultingId));
@@ -60,7 +61,7 @@ namespace Services.UnitTest
                 .Throws(new PropertyValueException("exception msg", "", "prop"));
 
             //Act, Assert
-            Assert.Throws<ArgumentException>(() => _registrationService.RegisterTime(registration));
+            Assert.Throws<ArgumentException>(() => _registrationService.Insert(registration));
         }
 
         [Test]
@@ -74,7 +75,7 @@ namespace Services.UnitTest
                 .Returns(registrationsList);
 
             //Act
-            var result = _registrationService.GetRegistrations(args);
+            var result = _registrationService.Get(args);
 
             //Assert
             Assert.That(result, Is.EqualTo(registrationsList));
@@ -91,7 +92,7 @@ namespace Services.UnitTest
                 .Returns(registration);
 
             //Act
-            var result = _registrationService.GetRegistration(id);
+            var result = _registrationService.Get(id);
 
             //Assert
             Assert.That(result, Is.EqualTo(registration));

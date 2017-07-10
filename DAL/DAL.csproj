@@ -63,7 +63,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\IRegistrationRepository.cs" />
+    <Compile Include="NHInvoiceRepository.cs" />
+    <Compile Include="NHRepository.cs" />
+    <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NHRegistrationRepository.cs" />
   </ItemGroup>

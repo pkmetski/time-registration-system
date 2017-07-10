@@ -1,56 +1,18 @@
-﻿using DAL.Interfaces;
-using System.Collections.Generic;
-using Model;
+﻿using Model;
 using NHibernate;
-using NHibernate.Cfg;
-using System;
+using Model.Arguments;
 
 namespace DAL
 {
-    public class NHRegistrationRepository : IRegistrationRepository
+    public class NHRegistrationRepository : NHRepository<Registration>
     {
-        private static ISessionFactory _sessionFactory;
-
-        public NHRegistrationRepository()
-        {
-            _sessionFactory = new Configuration().Configure().BuildSessionFactory();
-        }
-
         /// <summary>
         /// Inject a preconfigured session factory
         /// </summary>
-        /// <param name="sessionFactory"></param>
-        public NHRegistrationRepository(ISessionFactory sessionFactory)
-        {
-            _sessionFactory = sessionFactory;
-        }
+        /// <param name="session"></param>
+        public NHRegistrationRepository(ISession session) : base(session) { }
 
-        public int Insert(Registration registration)
-        {
-            return InvokeSessionOperation(session => (int)session.Save(registration));
-        }
-
-        public Registration Get(int id)
-        {
-            return InvokeSessionOperation(session => session.Get<Registration>(id));
-        }
-
-        public IEnumerable<Registration> Get(QueryArguments args)
-        {
-            return InvokeSessionOperation(session =>
-                BuildQuery(session.QueryOver<Registration>(), args)
-                    .List());
-        }
-
-        private T InvokeSessionOperation<T>(Func<ISession, T> func)
-        {
-            using (ISession session = _sessionFactory.OpenSession())
-            {
-                return func(session);
-            }
-        }
-
-        private IQueryOver<Registration, Registration> BuildQuery(IQueryOver<Registration, Registration> query, QueryArguments args)
+        protected override IQueryOver<Registration, Registration> BuildQuery(IQueryOver<Registration, Registration> query, QueryArguments args)
         {
             if (args.FromDate.HasValue)
             {

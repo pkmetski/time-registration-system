@@ -2,6 +2,7 @@
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using Model;
+using Model.Arguments;
 using NHibernate;
 using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
@@ -15,13 +16,13 @@ namespace DAL.UnitTest
     [TestFixture]
     public class NHRegistrationRepositoryTest
     {
-        private IRegistrationRepository _registrationRepository;
+        private IRepository<Registration> _registrationRepository;
         private static SQLiteConnection _connection;
 
         [SetUp]
         public void Setup()
         {
-            _registrationRepository = new NHRegistrationRepository(GetInMemorySessionFactory());
+            _registrationRepository = new NHRegistrationRepository(GetInMemorySessionFactorySession());
         }
 
         [TearDown]
@@ -30,7 +31,7 @@ namespace DAL.UnitTest
             _connection.Dispose();
         }
 
-        private ISessionFactory GetInMemorySessionFactory()
+        private ISession GetInMemorySessionFactorySession()
         {
             string connectionString = "FullUri=file:memorydb.db?mode=memory&cache=shared";
             var config = Fluently.Configure()
@@ -43,7 +44,7 @@ namespace DAL.UnitTest
             _connection.Open();
             schemaExport.Execute(false, true, false, _connection, null);
 
-            return config.BuildSessionFactory();
+            return config.BuildSessionFactory().OpenSession();
         }
 
         [Test]
