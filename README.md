@@ -4,6 +4,7 @@ This project implements WebApi RESTful ednpoints for registering and retrieving
 project time registrations data.
 
 **Features**
+============
 
 -   create new time registration
 
@@ -16,6 +17,7 @@ project time registrations data.
  
 
 **Technologies**
+================
 
 -   C\# WebApi REST services
 
@@ -28,16 +30,19 @@ project time registrations data.
  
 
 **Prerequisites**
+=================
 
 An SQL server installation with database named *TimeRegistrationSystem*.
 
  
 
 **Usage**
+=========
 
  
 
 *Registrations*
+---------------
 
  
 
@@ -100,6 +105,7 @@ will apply no filtering to the data set and all records will be returned.
  
 
 *Invoices*
+----------
 
  
 
@@ -151,13 +157,7 @@ For example an invoice with two registrations can look as follows:
 
 "Amount": 42,
 
-"RegistrationsIds": [
-
-2,
-
-3
-
-]
+"RegistrationsIds": [2,3]
 
 }
 
