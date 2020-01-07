@@ -1,6 +1,6 @@
 Time Registration System v1.0
 
-This project implements WebApi RESTful ednpoints for registering and retrieving
+This project implements WebApi RESTful endpoints for registering and retrieving
 project time registrations data.
 
 **Features**
